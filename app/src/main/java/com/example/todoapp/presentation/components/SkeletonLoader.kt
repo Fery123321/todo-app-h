@@ -131,27 +131,27 @@ fun SkeletonTaskList(
 
 fun Modifier.shimmerEffect(): Modifier = composed {
     val transition = rememberInfiniteTransition(label = "shimmer")
-    val alpha by transition.animateFloat(
-        initialValue = 0.2f,
-        targetValue = 0.9f,
+    val translateAnim by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
+            animation = tween(durationMillis = 1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
         ),
-        label = "shimmer_alpha"
+        label = "shimmer_translate"
     )
     
     val shimmerColors = listOf(
-        Color.Transparent,
-        MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
-        Color.Transparent
+        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
     )
     
     background(
         brush = Brush.linearGradient(
             colors = shimmerColors,
-            start = Offset.Zero,
-            end = Offset(x = 300f, y = 300f)
+            start = Offset(translateAnim - 200f, translateAnim - 200f),
+            end = Offset(translateAnim, translateAnim)
         )
     )
 }

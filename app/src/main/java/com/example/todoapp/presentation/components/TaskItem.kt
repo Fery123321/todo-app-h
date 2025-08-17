@@ -1,6 +1,7 @@
 package com.example.todoapp.presentation.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,7 +38,10 @@ import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
 import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.ui.theme.TodoAppTheme
+import com.example.todoapp.util.AnimationSpecs
 import com.example.todoapp.util.DateUtils
+import com.example.todoapp.util.bouncyClickable
+import com.example.todoapp.util.rememberHapticFeedback
 import java.time.LocalDateTime
 
 @Composable
@@ -46,28 +51,42 @@ fun TaskItem(
     onTaskClick: (TodoTask) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val textAlpha = if (task.isCompleted) 0.6f else 1f
+    val haptic = rememberHapticFeedback()
+    val textAlpha by animateFloatAsState(
+        targetValue = if (task.isCompleted) 0.6f else 1f,
+        animationSpec = AnimationSpecs.mediumFade,
+        label = "text_alpha"
+    )
     
     val backgroundColor by animateColorAsState(
         targetValue = if (task.isCompleted) 
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
         else 
             MaterialTheme.colorScheme.surface,
-        animationSpec = tween(300),
+        animationSpec = AnimationSpecs.mediumFade,
         label = "background_color"
+    )
+    
+    val cardElevation by animateFloatAsState(
+        targetValue = if (task.isCompleted) 1f else 3f,
+        animationSpec = AnimationSpecs.mediumSpring,
+        label = "card_elevation"
     )
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onTaskClick(task) },
+            .bouncyClickable { 
+                haptic.lightTap()
+                onTaskClick(task) 
+            },
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (task.isCompleted) 2.dp else 4.dp
+            defaultElevation = cardElevation.dp
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(
             modifier = Modifier
@@ -75,10 +94,17 @@ fun TaskItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Checkbox
+            // Checkbox with haptic feedback
             Checkbox(
                 checked = task.isCompleted,
-                onCheckedChange = { onToggleComplete(task.id) }
+                onCheckedChange = { 
+                    if (it) {
+                        haptic.success()
+                    } else {
+                        haptic.lightTap()
+                    }
+                    onToggleComplete(task.id) 
+                }
             )
             
             Spacer(modifier = Modifier.width(12.dp))

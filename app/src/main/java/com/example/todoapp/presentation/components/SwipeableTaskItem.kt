@@ -38,6 +38,8 @@ import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
 import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.ui.theme.TodoAppTheme
+import com.example.todoapp.util.AnimationSpecs
+import com.example.todoapp.util.rememberHapticFeedback
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -53,10 +55,12 @@ fun SwipeableTaskItem(
 ) {
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
+    val haptic = rememberHapticFeedback()
     
     // Swipe state
     var offsetX by remember { mutableFloatStateOf(0f) }
     val animatedOffsetX = remember { Animatable(0f) }
+    var hasTriggeredHaptic by remember { mutableFloatStateOf(0f) }
     
     // Action button width in pixels
     val actionButtonWidthPx = with(density) { 80.dp.toPx() }
@@ -96,10 +100,11 @@ fun SwipeableTaskItem(
             ) {
                 IconButton(
                     onClick = { 
+                        haptic.mediumTap()
                         onEditTask(task)
                         // Reset swipe position
                         coroutineScope.launch {
-                            animatedOffsetX.animateTo(0f, animationSpec = tween(300))
+                            animatedOffsetX.animateTo(0f, animationSpec = AnimationSpecs.mediumSpring)
                             offsetX = 0f
                         }
                     }
@@ -125,10 +130,11 @@ fun SwipeableTaskItem(
             ) {
                 IconButton(
                     onClick = { 
+                        haptic.strongTap()
                         onDeleteTask(task)
                         // Reset swipe position
                         coroutineScope.launch {
-                            animatedOffsetX.animateTo(0f, animationSpec = tween(300))
+                            animatedOffsetX.animateTo(0f, animationSpec = AnimationSpecs.mediumSpring)
                             offsetX = 0f
                         }
                     }
@@ -152,20 +158,35 @@ fun SwipeableTaskItem(
                             coroutineScope.launch {
                                 // Determine final position based on swipe distance
                                 val targetOffset = when {
-                                    offsetX < -swipeThreshold -> -maxSwipeDistance
+                                    offsetX < -swipeThreshold -> {
+                                        if (hasTriggeredHaptic != -maxSwipeDistance) {
+                                            haptic.lightTap()
+                                            hasTriggeredHaptic = -maxSwipeDistance
+                                        }
+                                        -maxSwipeDistance
+                                    }
                                     offsetX > swipeThreshold -> 0f
                                     else -> 0f
                                 }
                                 
                                 animatedOffsetX.animateTo(
                                     targetValue = targetOffset,
-                                    animationSpec = tween(300)
+                                    animationSpec = AnimationSpecs.mediumSpring
                                 )
                                 offsetX = targetOffset
+                                if (targetOffset == 0f) {
+                                    hasTriggeredHaptic = 0f
+                                }
                             }
                         }
                     ) { _, dragAmount ->
                         val newOffset = (offsetX + dragAmount).coerceIn(-maxSwipeDistance, 0f)
+                        
+                        // Trigger haptic feedback when crossing threshold
+                        if (abs(newOffset) > swipeThreshold && abs(offsetX) <= swipeThreshold) {
+                            haptic.lightTap()
+                        }
+                        
                         offsetX = newOffset
                         coroutineScope.launch {
                             animatedOffsetX.snapTo(newOffset)
@@ -182,8 +203,9 @@ fun SwipeableTaskItem(
                     } else {
                         // Reset swipe if clicked while swiped
                         coroutineScope.launch {
-                            animatedOffsetX.animateTo(0f, animationSpec = tween(300))
+                            animatedOffsetX.animateTo(0f, animationSpec = AnimationSpecs.mediumSpring)
                             offsetX = 0f
+                            hasTriggeredHaptic = 0f
                         }
                     }
                 }

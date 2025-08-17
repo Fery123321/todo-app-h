@@ -59,6 +59,7 @@ import com.example.todoapp.presentation.components.SkeletonTaskList
 import com.example.todoapp.presentation.components.SwipeableTaskItem
 import com.example.todoapp.presentation.components.TaskInputDialog
 import com.example.todoapp.ui.theme.TodoAppTheme
+import com.example.todoapp.util.rememberHapticFeedback
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +73,7 @@ fun TaskListScreen(
     var showTaskInputDialog by remember { mutableStateOf(false) }
     var showFilterSheet by remember { mutableStateOf(false) }
     val filterSheetState = rememberModalBottomSheetState()
+    val haptic = rememberHapticFeedback()
     
     // Show error messages in snackbar
     LaunchedEffect(uiState.errorMessage) {
@@ -86,13 +88,19 @@ fun TaskListScreen(
             TopAppBar(
                 title = { Text("Tasks") },
                 actions = {
-                    IconButton(onClick = onNavigateToStatistics) {
+                    IconButton(onClick = { 
+                        haptic.lightTap()
+                        onNavigateToStatistics() 
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Info,
                             contentDescription = "View statistics"
                         )
                     }
-                    IconButton(onClick = { showFilterSheet = true }) {
+                    IconButton(onClick = { 
+                        haptic.lightTap()
+                        showFilterSheet = true 
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = "Filter tasks"
@@ -104,7 +112,10 @@ fun TaskListScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showTaskInputDialog = true },
+                onClick = { 
+                    haptic.mediumTap()
+                    showTaskInputDialog = true 
+                },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
