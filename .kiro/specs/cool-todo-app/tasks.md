@@ -48,22 +48,22 @@
     - Write tests for search and filter functionality
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 5. Build core UI components
-  - [ ] 5.1 Create TaskItem composable with basic functionality
+- [x] 5. Build core UI components
+  - [x] 5.1 Create TaskItem composable with basic functionality
     - Design TaskItem layout with title, description, and checkbox
     - Implement completion toggle with visual feedback
     - Add priority and category indicators
     - Create preview functions for different states
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.3_
   
-  - [ ] 5.2 Add swipe actions to TaskItem
+  - [x] 5.2 Add swipe actions to TaskItem
     - Implement swipe-to-reveal functionality
     - Add delete and edit action buttons
     - Include smooth animations for swipe interactions
     - Write UI tests for swipe functionality
     - _Requirements: 1.4, 1.5_
   
-  - [ ] 5.3 Create task input components
+  - [x] 5.3 Create task input components
     - Build TaskInputDialog for quick task creation
     - Create AddEditTaskScreen for detailed task editing
     - Implement form validation and error handling
