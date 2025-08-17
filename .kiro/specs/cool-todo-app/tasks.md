@@ -6,14 +6,14 @@
   - Set up dependency injection foundation
   - _Requirements: All requirements depend on proper project setup_
 
-- [ ] 2. Create core data models and database setup
-  - [ ] 2.1 Implement domain models and enums
+- [x] 2. Create core data models and database setup
+  - [x] 2.1 Implement domain models and enums
     - Create TodoTask data class with all required properties
     - Implement Priority and Category enums with display properties
     - Create TaskStatistics and DailyProgress data classes
     - _Requirements: 1.1, 3.1, 3.2, 7.2, 7.3_
   
-  - [ ] 2.2 Set up Room database entities and DAOs
+  - [x] 2.2 Set up Room database entities and DAOs
     - Create TaskEntity with Room annotations
     - Implement TaskDao with all CRUD operations and queries
     - Create database class with proper configuration
