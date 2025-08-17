@@ -55,11 +55,14 @@ import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.presentation.TodoUiState
 import com.example.todoapp.presentation.components.FilterChips
 import com.example.todoapp.presentation.components.SearchBar
+import com.example.todoapp.presentation.components.OptimizedTaskList
 import com.example.todoapp.presentation.components.SkeletonTaskList
 import com.example.todoapp.presentation.components.SwipeableTaskItem
 import com.example.todoapp.presentation.components.TaskInputDialog
 import com.example.todoapp.ui.theme.TodoAppTheme
+import com.example.todoapp.util.PerformanceMonitor
 import com.example.todoapp.util.rememberHapticFeedback
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +77,8 @@ fun TaskListScreen(
     onCategoryFilterChange: (Category?) -> Unit,
     onCompletionFilterChange: (Boolean) -> Unit,
     onClearFilters: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    performanceMonitor: PerformanceMonitor? = null
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var showFilterSheet by remember { mutableStateOf(false) }
@@ -181,12 +185,16 @@ fun TaskListScreen(
                     targetOffsetY = { -it / 4 }
                 )
             ) {
-                TaskListContent(
+                OptimizedTaskList(
                     tasks = uiState.tasks,
-                    onToggleComplete = onTaskToggle,
+                    isLoading = uiState.isLoading,
                     onTaskClick = onTaskClick,
-                    onEditTask = onTaskClick,
-                    onDeleteTask = { task -> onTaskDelete(task.id) }
+                    onTaskToggle = onTaskToggle,
+                    onTaskDelete = onTaskDelete,
+                    onTaskEdit = onTaskClick,
+                    performanceMonitor = performanceMonitor,
+                    contentPadding = PaddingValues(16.dp),
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

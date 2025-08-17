@@ -7,6 +7,7 @@ import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
 import com.example.todoapp.notification.TaskReminderScheduler
+import com.example.todoapp.util.PerformanceMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TodoViewModel @Inject constructor(
     private val repository: TodoRepository,
-    private val reminderScheduler: TaskReminderScheduler
+    private val reminderScheduler: TaskReminderScheduler,
+    private val performanceMonitor: PerformanceMonitor
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(TodoUiState())

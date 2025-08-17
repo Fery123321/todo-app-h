@@ -1,5 +1,6 @@
 package com.example.todoapp.data.repository
 
+import com.example.todoapp.data.local.DatabaseErrorHandler
 import com.example.todoapp.data.local.TaskDao
 import com.example.todoapp.data.mapper.toDomainModel
 import com.example.todoapp.data.mapper.toEntity
@@ -20,7 +21,8 @@ import javax.inject.Singleton
 
 @Singleton
 class TodoRepositoryImpl @Inject constructor(
-    private val taskDao: TaskDao
+    private val taskDao: TaskDao,
+    private val errorHandler: DatabaseErrorHandler
 ) : TodoRepository {
     
     override fun getAllTasks(): Flow<List<TodoTask>> {
@@ -58,28 +60,36 @@ class TodoRepositoryImpl @Inject constructor(
     }
     
     override suspend fun insertTask(task: TodoTask) {
-        taskDao.insertTask(task.toEntity())
+        errorHandler.executeWithRetry {
+            taskDao.insertTask(task.toEntity())
+        }.getOrThrow()
     }
     
     override suspend fun updateTask(task: TodoTask) {
-        taskDao.updateTask(task.toEntity())
+        errorHandler.executeWithRetry {
+            taskDao.updateTask(task.toEntity())
+        }.getOrThrow()
     }
     
     override suspend fun deleteTask(taskId: String) {
-        taskDao.deleteTaskById(taskId)
+        errorHandler.executeWithRetry {
+            taskDao.deleteTaskById(taskId)
+        }.getOrThrow()
     }
     
     override suspend fun toggleTaskCompletion(taskId: String) {
-        val task = taskDao.getTaskById(taskId)
-        if (task != null) {
-            val newCompletionStatus = !task.isCompleted
-            val completedAt = if (newCompletionStatus) {
-                LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
-            } else {
-                null
+        errorHandler.executeWithRetry {
+            val task = taskDao.getTaskById(taskId)
+            if (task != null) {
+                val newCompletionStatus = !task.isCompleted
+                val completedAt = if (newCompletionStatus) {
+                    LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+                } else {
+                    null
+                }
+                taskDao.updateTaskCompletion(taskId, newCompletionStatus, completedAt)
             }
-            taskDao.updateTaskCompletion(taskId, newCompletionStatus, completedAt)
-        }
+        }.getOrThrow()
     }
     
     override fun searchTasks(query: String): Flow<List<TodoTask>> {

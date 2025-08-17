@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -82,6 +83,9 @@ dependencies {
     
     // Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+    
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
     
     // Testing
     testImplementation(libs.junit)
