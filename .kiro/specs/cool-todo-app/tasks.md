@@ -33,15 +33,15 @@
     - Write unit tests for repository operations
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 4. Create ViewModels and UI state management
-  - [ ] 4.1 Implement TodoViewModel with state management
+- [x] 4. Create ViewModels and UI state management
+  - [x] 4.1 Implement TodoViewModel with state management
     - Create TodoUiState data class
     - Implement TodoViewModel with StateFlow
     - Add methods for task operations (create, update, delete, toggle)
     - Write unit tests for ViewModel logic
     - _Requirements: 1.1, 1.2, 1.3, 2.1, 2.2_
   
-  - [ ] 4.2 Add search and filter state management
+  - [x] 4.2 Add search and filter state management
     - Implement search query state handling
     - Add category and completion filter state
     - Create real-time filtering logic
