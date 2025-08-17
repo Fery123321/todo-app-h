@@ -1,9 +1,12 @@
 package com.example.todoapp.domain.repository
 
 import com.example.todoapp.domain.model.Category
+import com.example.todoapp.domain.model.DailyProgress
 import com.example.todoapp.domain.model.Priority
+import com.example.todoapp.domain.model.TaskStatistics
 import com.example.todoapp.domain.model.TodoTask
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 interface TodoRepository {
     fun getAllTasks(): Flow<List<TodoTask>>
@@ -26,4 +29,12 @@ interface TodoRepository {
     suspend fun getTotalTaskCount(): Int
     suspend fun getCompletedTaskCount(): Int
     suspend fun getTaskCountByCategory(category: Category): Int
+    
+    // Statistics methods
+    suspend fun getTaskStatistics(): TaskStatistics
+    suspend fun getCompletionRate(): Float
+    suspend fun getCurrentStreak(): Int
+    suspend fun getCategoryBreakdown(): Map<Category, Int>
+    suspend fun getWeeklyProgress(): List<DailyProgress>
+    suspend fun getDailyProgress(date: LocalDate): DailyProgress
 }

@@ -29,6 +29,7 @@ class TodoViewModel @Inject constructor(
     
     init {
         loadTasks()
+        loadStatistics()
     }
     
     private fun loadTasks() {
@@ -240,5 +241,24 @@ class TodoViewModel @Inject constructor(
     
     fun getTotalTasksCount(): Int {
         return allTasks.size
+    }
+    
+    // Statistics Methods
+    
+    fun loadStatistics() {
+        viewModelScope.launch {
+            try {
+                val statistics = repository.getTaskStatistics()
+                _uiState.value = _uiState.value.copy(statistics = statistics)
+            } catch (exception: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = exception.message ?: "Failed to load statistics"
+                )
+            }
+        }
+    }
+    
+    fun refreshStatistics() {
+        loadStatistics()
     }
 }

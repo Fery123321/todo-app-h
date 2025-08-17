@@ -106,15 +106,15 @@
     - Write tests for notification functionality
     - _Requirements: 4.5_
 
-- [ ] 8. Build statistics and progress tracking
-  - [ ] 8.1 Implement statistics calculation
+- [x] 8. Build statistics and progress tracking
+  - [x] 8.1 Implement statistics calculation
     - Create statistics calculation logic in repository
     - Add completion rate and streak calculations
     - Implement category breakdown analysis
     - Write unit tests for statistics logic
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
   
-  - [ ] 8.2 Create StatisticsScreen UI
+  - [x] 8.2 Create StatisticsScreen UI
     - Design statistics cards and progress indicators
     - Implement charts for weekly progress visualization
     - Add milestone celebration animations

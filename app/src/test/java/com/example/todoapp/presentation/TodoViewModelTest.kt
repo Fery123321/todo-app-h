@@ -2,6 +2,7 @@ package com.example.todoapp.presentation
 
 import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
+import com.example.todoapp.domain.model.TaskStatistics
 import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.domain.repository.TodoRepository
 import com.example.todoapp.notification.TaskReminderScheduler
@@ -59,6 +60,7 @@ class TodoViewModelTest {
         repository = mockk()
         reminderScheduler = mockk(relaxed = true)
         every { repository.getAllTasks() } returns flowOf(sampleTasks)
+        coEvery { repository.getTaskStatistics() } returns com.example.todoapp.domain.model.TaskStatistics()
         viewModel = TodoViewModel(repository, reminderScheduler)
     }
 
@@ -71,6 +73,7 @@ class TodoViewModelTest {
     fun `initial state should have correct default values`() = runTest {
         // Given - fresh ViewModel
         every { repository.getAllTasks() } returns flowOf(emptyList())
+        coEvery { repository.getTaskStatistics() } returns TaskStatistics()
         val freshViewModel = TodoViewModel(repository, reminderScheduler)
         
         // When - checking initial state before tasks load

@@ -5,10 +5,14 @@ import com.example.todoapp.data.mapper.toDomainModel
 import com.example.todoapp.data.mapper.toEntity
 import com.example.todoapp.domain.repository.TodoRepository
 import com.example.todoapp.domain.model.Category
+import com.example.todoapp.domain.model.DailyProgress
 import com.example.todoapp.domain.model.Priority
+import com.example.todoapp.domain.model.TaskStatistics
 import com.example.todoapp.domain.model.TodoTask
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import javax.inject.Inject
@@ -134,5 +138,105 @@ class TodoRepositoryImpl @Inject constructor(
     
     override suspend fun getTaskCountByCategory(category: Category): Int {
         return taskDao.getTaskCountByCategory(category.name)
+    }
+    
+    override suspend fun getTaskStatistics(): TaskStatistics {
+        val totalTasks = getTotalTaskCount()
+        val completedTasks = getCompletedTaskCount()
+        val completionRate = getCompletionRate()
+        val currentStreak = getCurrentStreak()
+        val categoryBreakdown = getCategoryBreakdown()
+        val weeklyProgress = getWeeklyProgress()
+        
+        return TaskStatistics(
+            totalTasks = totalTasks,
+            completedTasks = completedTasks,
+            completionRate = completionRate,
+            currentStreak = currentStreak,
+            categoryBreakdown = categoryBreakdown,
+            weeklyProgress = weeklyProgress
+        )
+    }
+    
+    override suspend fun getCompletionRate(): Float {
+        val totalTasks = getTotalTaskCount()
+        if (totalTasks == 0) return 0f
+        
+        val completedTasks = getCompletedTaskCount()
+        return (completedTasks.toFloat() / totalTasks.toFloat()) * 100f
+    }
+    
+    override suspend fun getCurrentStreak(): Int {
+        val today = LocalDate.now()
+        var streak = 0
+        var currentDate = today
+        
+        // Check each day backwards from today
+        while (true) {
+            val dailyProgress = getDailyProgress(currentDate)
+            
+            // If no tasks were completed on this day, break the streak
+            if (dailyProgress.completedTasks == 0) {
+                // Exception: if it's today and no tasks were created, don't break streak
+                if (currentDate == today && dailyProgress.totalTasks == 0) {
+                    currentDate = currentDate.minusDays(1)
+                    continue
+                }
+                break
+            }
+            
+            // If tasks were completed, increment streak
+            if (dailyProgress.completedTasks > 0) {
+                streak++
+            }
+            
+            currentDate = currentDate.minusDays(1)
+            
+            // Limit streak calculation to reasonable timeframe (e.g., 365 days)
+            if (streak > 365) break
+        }
+        
+        return streak
+    }
+    
+    override suspend fun getCategoryBreakdown(): Map<Category, Int> {
+        val breakdown = mutableMapOf<Category, Int>()
+        
+        Category.values().forEach { category ->
+            val count = getTaskCountByCategory(category)
+            if (count > 0) {
+                breakdown[category] = count
+            }
+        }
+        
+        return breakdown
+    }
+    
+    override suspend fun getWeeklyProgress(): List<DailyProgress> {
+        val today = LocalDate.now()
+        val weeklyProgress = mutableListOf<DailyProgress>()
+        
+        // Get progress for the last 7 days
+        for (i in 6 downTo 0) {
+            val date = today.minusDays(i.toLong())
+            val dailyProgress = getDailyProgress(date)
+            weeklyProgress.add(dailyProgress)
+        }
+        
+        return weeklyProgress
+    }
+    
+    override suspend fun getDailyProgress(date: LocalDate): DailyProgress {
+        val startOfDay = date.atStartOfDay().toEpochSecond(ZoneOffset.UTC)
+        val endOfDay = date.atTime(23, 59, 59).toEpochSecond(ZoneOffset.UTC)
+        
+        val completedTasks = taskDao.getCompletedTaskCountInDateRange(startOfDay, endOfDay)
+        val totalTasks = taskDao.getTotalTaskCountInDateRange(startOfDay, endOfDay)
+        
+        return DailyProgress(
+            date = date,
+            completedTasks = completedTasks,
+            totalTasks = totalTasks
+        )
     }
 }
