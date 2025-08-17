@@ -20,14 +20,14 @@
     - Write unit tests for database operations
     - _Requirements: 1.1, 1.2, 2.1, 6.2_
 
-- [ ] 3. Implement repository layer
-  - [ ] 3.1 Create repository interface and implementation
+- [x] 3. Implement repository layer
+  - [x] 3.1 Create repository interface and implementation
     - Define TodoRepository interface with all required methods
     - Implement TodoRepositoryImpl with Room integration
     - Add data transformation between entities and domain models
     - _Requirements: 1.1, 1.2, 2.1, 6.1, 6.2_
   
-  - [ ] 3.2 Add search and filtering capabilities
+  - [x] 3.2 Add search and filtering capabilities
     - Implement search functionality in repository
     - Add category and completion status filtering
     - Write unit tests for repository operations
