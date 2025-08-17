@@ -1,5 +1,6 @@
 package com.example.todoapp.presentation.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,6 +30,7 @@ import com.example.todoapp.util.PerformanceMonitor
 /**
  * Optimized task list with performance monitoring and efficient rendering
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OptimizedTaskList(
     tasks: List<TodoTask>,
@@ -130,10 +132,10 @@ fun OptimizedTaskList(
 @Composable
 private fun OptimizedTaskItem(
     task: TodoTask,
-    onClick: () -> Unit,
-    onToggle: () -> Unit,
-    onDelete: () -> Unit,
-    onEdit: () -> Unit,
+    onClick: (TodoTask) -> Unit,
+    onToggle: (String) -> Unit,
+    onDelete: (TodoTask) -> Unit,
+    onEdit: (TodoTask) -> Unit,
     performanceMonitor: PerformanceMonitor?,
     modifier: Modifier = Modifier
 ) {
@@ -141,18 +143,18 @@ private fun OptimizedTaskItem(
     performanceMonitor?.measureTime("TaskItem Composition") {
         SwipeableTaskItem(
             task = task,
-            onClick = onClick,
-            onToggle = onToggle,
-            onDelete = onDelete,
-            onEdit = onEdit,
+            onToggleComplete = { onToggle(task.id) },
+            onTaskClick = { onClick(task) },
+            onEditTask = { onEdit(task) },
+            onDeleteTask = { onDelete(task) },
             modifier = modifier
         )
     } ?: SwipeableTaskItem(
         task = task,
-        onClick = onClick,
-        onToggle = onToggle,
-        onDelete = onDelete,
-        onEdit = onEdit,
+        onToggleComplete = { onToggle(task.id) },
+        onTaskClick = { onClick(task) },
+        onEditTask = { onEdit(task) },
+        onDeleteTask = { onDelete(task) },
         modifier = modifier
     )
 }

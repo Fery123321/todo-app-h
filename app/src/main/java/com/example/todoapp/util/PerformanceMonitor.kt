@@ -17,9 +17,9 @@ import javax.inject.Singleton
 class PerformanceMonitor @Inject constructor() {
     
     companion object {
-        private const val TAG = "PerformanceMonitor"
-        private const val MEMORY_THRESHOLD_MB = 50 // Alert if memory usage exceeds 50MB
-        private const val FRAME_TIME_THRESHOLD_MS = 16.67 // 60fps = 16.67ms per frame
+        const val TAG = "PerformanceMonitor"
+        const val MEMORY_THRESHOLD_MB = 50 // Alert if memory usage exceeds 50MB
+        const val FRAME_TIME_THRESHOLD_MS = 16.67 // 60fps = 16.67ms per frame
     }
     
     var isMonitoring = false

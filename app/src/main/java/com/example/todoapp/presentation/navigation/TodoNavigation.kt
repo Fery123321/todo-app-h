@@ -75,8 +75,6 @@ fun TodoNavigation(
             ) {
                 TaskListScreen(
                     uiState = uiState,
-                    isSearchActive = isSearchActive,
-                    onSearchActiveChange = { isSearchActive = it },
                     onTaskClick = { task ->
                         navController.navigateToEditTask(task.id)
                     },
@@ -91,8 +89,7 @@ fun TodoNavigation(
                     onSearchQueryChange = viewModel::updateSearchQuery,
                     onCategoryFilterChange = viewModel::selectCategory,
                     onCompletionFilterChange = viewModel::setShowCompletedTasks,
-                    onClearFilters = viewModel::clearAllFilters,
-                    snackbarHostState = snackbarHostState
+                    onClearFilters = viewModel::clearAllFilters
                 )
             }
         

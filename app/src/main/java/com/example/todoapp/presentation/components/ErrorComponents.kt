@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 fun ErrorState(
     title: String = "Something went wrong",
     message: String = "An unexpected error occurred. Please try again.",
-    icon: ImageVector = Icons.Default.Error,
+    icon: ImageVector = Icons.Default.Warning,
     onRetry: (() -> Unit)? = null,
     onDismiss: (() -> Unit)? = null,
     modifier: Modifier = Modifier

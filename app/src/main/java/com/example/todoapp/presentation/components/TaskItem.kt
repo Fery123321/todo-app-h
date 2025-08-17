@@ -63,7 +63,7 @@ fun TaskItem(
             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
         else 
             MaterialTheme.colorScheme.surface,
-        animationSpec = AnimationSpecs.mediumFade,
+        animationSpec = tween(300),
         label = "background_color"
     )
     

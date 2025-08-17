@@ -6,7 +6,8 @@ import androidx.documentfile.provider.DocumentFile
 import com.example.todoapp.data.local.TaskDao
 import com.example.todoapp.data.local.TaskEntity
 import com.example.todoapp.domain.model.TodoTask
-import com.example.todoapp.data.mapper.TaskMapper
+import com.example.todoapp.data.mapper.toDomainModel
+import com.example.todoapp.data.mapper.toEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.first
@@ -41,8 +42,7 @@ data class SerializableTask(
 
 @Singleton
 class DataBackupManager @Inject constructor(
-    private val taskDao: TaskDao,
-    private val taskMapper: TaskMapper
+    private val taskDao: TaskDao
 ) {
     private val json = Json { 
         prettyPrint = true

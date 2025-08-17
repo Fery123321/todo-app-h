@@ -87,6 +87,9 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization.json)
     
+    // DocumentFile
+    implementation(libs.androidx.documentfile)
+    
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

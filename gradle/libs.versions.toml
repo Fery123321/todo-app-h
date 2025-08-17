@@ -19,6 +19,7 @@ workManager = "2.10.0"
 desugar = "2.1.4"
 mockk = "1.13.8"
 serialization = "1.6.3"
+documentfile = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -72,6 +73,9 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 # Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+
+# DocumentFile
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -58,17 +58,14 @@ fun Modifier.bouncyClickable(
         .scale(scale.value)
         .clickable(
             interactionSource = interactionSource,
-            indication = rememberRipple(bounded = false, radius = 24.dp),
+            indication = null,
             enabled = enabled
         ) {
             onClick()
         }
         .graphicsLayer {
-            LaunchedEffect(interactionSource) {
-                // Animate scale down and back up on click
-                scale.animateTo(scaleDown, animationSpec)
-                scale.animateTo(1f, animationSpec)
-            }
+            scaleX = scale.value
+            scaleY = scale.value
         }
 }
 

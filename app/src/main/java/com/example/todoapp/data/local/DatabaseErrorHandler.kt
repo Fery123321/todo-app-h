@@ -15,7 +15,7 @@ sealed class DatabaseError : Exception() {
     object DiskFullError : DatabaseError()
     object PermissionError : DatabaseError()
     data class ConstraintViolationError(val constraint: String) : DatabaseError()
-    data class UnknownError(val cause: Throwable) : DatabaseError()
+    data class UnknownError(override val cause: Throwable) : DatabaseError()
 }
 
 @Singleton
@@ -106,19 +106,9 @@ class DatabaseErrorHandler @Inject constructor() {
      * Create a callback for Room database that handles corruption
      */
     fun createDatabaseCallback(
-        onCorruption: () -> Unit = {}
+        onCorruptionCallback: () -> Unit = {}
     ): RoomDatabase.Callback {
         return object : RoomDatabase.Callback() {
-            override fun onCorruption(db: SupportSQLiteDatabase) {
-                super.onCorruption(db)
-                Log.e(TAG, "Database corruption detected")
-                
-                // Notify about corruption
-                CoroutineScope(Dispatchers.IO).launch {
-                    onCorruption()
-                }
-            }
-            
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 Log.i(TAG, "Database created successfully")
@@ -127,6 +117,23 @@ class DatabaseErrorHandler @Inject constructor() {
             override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onOpen(db)
                 Log.d(TAG, "Database opened")
+                
+                // Check for corruption on open
+                try {
+                    db.query("PRAGMA integrity_check").use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val result = cursor.getString(0)
+                            if (result != "ok") {
+                                Log.e(TAG, "Database corruption detected: $result")
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    onCorruptionCallback()
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error checking database integrity", e)
+                }
                 
                 // Enable foreign key constraints
                 db.execSQL("PRAGMA foreign_keys=ON")

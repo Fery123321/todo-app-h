@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -81,7 +81,7 @@ fun TodoTopAppBar(
                     if (showStatisticsAction) {
                         IconButton(onClick = onStatisticsClick) {
                             Icon(
-                                imageVector = Icons.Default.BarChart,
+                                imageVector = Icons.Default.Info,
                                 contentDescription = "View statistics"
                             )
                         }
