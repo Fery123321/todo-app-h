@@ -52,7 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
 import com.example.todoapp.domain.model.TodoTask
-import com.example.todoapp.presentation.TodoViewModel
+import com.example.todoapp.presentation.TodoUiState
 import com.example.todoapp.presentation.components.FilterChips
 import com.example.todoapp.presentation.components.SearchBar
 import com.example.todoapp.presentation.components.SkeletonTaskList
@@ -64,13 +64,19 @@ import com.example.todoapp.util.rememberHapticFeedback
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
-    onNavigateToAddEdit: (TodoTask?) -> Unit = {},
-    onNavigateToStatistics: () -> Unit = {},
-    viewModel: TodoViewModel = hiltViewModel()
+    uiState: com.example.todoapp.presentation.TodoUiState,
+    onTaskClick: (TodoTask) -> Unit,
+    onAddTaskClick: () -> Unit,
+    onNavigateToStatistics: () -> Unit,
+    onTaskToggle: (String) -> Unit,
+    onTaskDelete: (String) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    onCategoryFilterChange: (Category?) -> Unit,
+    onCompletionFilterChange: (Boolean) -> Unit,
+    onClearFilters: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    var showTaskInputDialog by remember { mutableStateOf(false) }
     var showFilterSheet by remember { mutableStateOf(false) }
     val filterSheetState = rememberModalBottomSheetState()
     val haptic = rememberHapticFeedback()
@@ -79,7 +85,6 @@ fun TaskListScreen(
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
-            viewModel.clearError()
         }
     }
     
@@ -114,7 +119,7 @@ fun TaskListScreen(
             FloatingActionButton(
                 onClick = { 
                     haptic.mediumTap()
-                    showTaskInputDialog = true 
+                    onAddTaskClick()
                 },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
@@ -133,8 +138,8 @@ fun TaskListScreen(
             // Search bar
             SearchBar(
                 query = uiState.searchQuery,
-                onQueryChange = viewModel::updateSearchQuery,
-                onClearQuery = viewModel::clearSearch,
+                onQueryChange = onSearchQueryChange,
+                onClearQuery = { onSearchQueryChange("") },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
             
@@ -178,10 +183,10 @@ fun TaskListScreen(
             ) {
                 TaskListContent(
                     tasks = uiState.tasks,
-                    onToggleComplete = viewModel::toggleTaskCompletion,
-                    onTaskClick = { task -> onNavigateToAddEdit(task) },
-                    onEditTask = { task -> onNavigateToAddEdit(task) },
-                    onDeleteTask = { task -> viewModel.deleteTask(task.id) }
+                    onToggleComplete = onTaskToggle,
+                    onTaskClick = onTaskClick,
+                    onEditTask = onTaskClick,
+                    onDeleteTask = { task -> onTaskDelete(task.id) }
                 )
             }
         }
@@ -196,10 +201,10 @@ fun TaskListScreen(
             FilterChips(
                 selectedCategory = uiState.selectedCategory,
                 showCompletedTasks = uiState.showCompletedTasks,
-                onCategorySelected = viewModel::selectCategory,
-                onShowCompletedToggle = viewModel::setShowCompletedTasks,
+                onCategorySelected = onCategoryFilterChange,
+                onShowCompletedToggle = onCompletionFilterChange,
                 onClearFilters = {
-                    viewModel.clearAllFilters()
+                    onClearFilters()
                     showFilterSheet = false
                 },
                 modifier = Modifier.padding(16.dp)
@@ -209,21 +214,7 @@ fun TaskListScreen(
         }
     }
     
-    // Task input dialog for quick task creation
-    TaskInputDialog(
-        isVisible = showTaskInputDialog,
-        onDismiss = { showTaskInputDialog = false },
-        onSaveTask = { task ->
-            viewModel.createTask(
-                title = task.title,
-                description = task.description,
-                priority = task.priority,
-                category = task.category,
-                dueDate = task.dueDate
-            )
-            showTaskInputDialog = false
-        }
-    )
+
 }
 
 @Composable
@@ -322,7 +313,18 @@ private fun TaskListContent(
 @Composable
 private fun TaskListScreenPreview() {
     TodoAppTheme {
-        TaskListScreen()
+        TaskListScreen(
+            uiState = TodoUiState(),
+            onTaskClick = {},
+            onAddTaskClick = {},
+            onNavigateToStatistics = {},
+            onTaskToggle = {},
+            onTaskDelete = {},
+            onSearchQueryChange = {},
+            onCategoryFilterChange = {},
+            onCompletionFilterChange = {},
+            onClearFilters = {}
+        )
     }
 }
 
