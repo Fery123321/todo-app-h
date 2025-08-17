@@ -70,22 +70,22 @@
     - Add date picker for due dates
     - _Requirements: 1.1, 1.2, 4.1_
 
-- [ ] 6. Implement main task list screen
-  - [ ] 6.1 Create TaskListScreen with basic layout
+- [x] 6. Implement main task list screen
+  - [x] 6.1 Create TaskListScreen with basic layout
     - Build main screen layout with task list
     - Implement LazyColumn for task display
     - Add floating action button for new tasks
     - Connect ViewModel to UI state
     - _Requirements: 1.1, 2.4, 5.1_
   
-  - [ ] 6.2 Add search and filter UI
+  - [x] 6.2 Add search and filter UI
     - Implement SearchBar composable
     - Create filter chips for categories and status
     - Add clear filters functionality
     - Connect search and filters to ViewModel
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
   
-  - [ ] 6.3 Implement list animations
+  - [x] 6.3 Implement list animations
     - Add smooth animations for task list changes
     - Implement item insertion and removal animations
     - Add loading states with skeleton UI
