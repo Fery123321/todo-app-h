@@ -113,15 +113,24 @@ class TodoViewModel @Inject constructor(
                     category = category,
                     dueDate = dueDate
                 )
+                
+                android.util.Log.d("TodoViewModel", "Creating task: ${newTask.title}")
                 repository.insertTask(newTask)
+                android.util.Log.d("TodoViewModel", "Task created successfully")
                 
                 // Schedule reminder if task has due date
                 if (newTask.dueDate != null) {
-                    reminderScheduler.scheduleTaskReminder(newTask)
+                    try {
+                        reminderScheduler.scheduleTaskReminder(newTask)
+                    } catch (e: Exception) {
+                        android.util.Log.w("TodoViewModel", "Failed to schedule reminder", e)
+                        // Don't fail task creation if reminder scheduling fails
+                    }
                 }
                 
                 clearError()
             } catch (exception: Exception) {
+                android.util.Log.e("TodoViewModel", "Failed to create task", exception)
                 _uiState.value = _uiState.value.copy(
                     errorMessage = exception.message ?: "Failed to create task"
                 )

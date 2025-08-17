@@ -121,7 +121,6 @@ fun TodoNavigation(
                         category = task.category,
                         dueDate = task.dueDate
                     )
-                    navController.navigateBack()
                 }
             )
         }
@@ -156,7 +155,6 @@ fun TodoNavigation(
                 },
                 onSaveTask = { updatedTask ->
                     viewModel.updateTask(updatedTask)
-                    navController.navigateBack()
                 }
             )
         }

@@ -10,8 +10,8 @@ import android.content.Context
 
 @Database(
     entities = [TaskEntity::class],
-    version = 2,
-    exportSchema = true
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class TodoDatabase : RoomDatabase() {
@@ -51,9 +51,8 @@ abstract class TodoDatabase : RoomDatabase() {
                 TodoDatabase::class.java,
                 DATABASE_NAME
             )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .addCallback(errorHandler.createDatabaseCallback())
-            .fallbackToDestructiveMigration() // Only for development - remove in production
+            .fallbackToDestructiveMigration()
             .build()
         }
     }

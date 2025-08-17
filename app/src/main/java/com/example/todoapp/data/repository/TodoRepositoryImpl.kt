@@ -60,9 +60,20 @@ class TodoRepositoryImpl @Inject constructor(
     }
     
     override suspend fun insertTask(task: TodoTask) {
-        errorHandler.executeWithRetry {
-            taskDao.insertTask(task.toEntity())
-        }.getOrThrow()
+        android.util.Log.d("TodoRepository", "Inserting task: ${task.title}")
+        try {
+            val entity = task.toEntity()
+            android.util.Log.d("TodoRepository", "Converted to entity: ${entity.title}")
+            
+            errorHandler.executeWithRetry {
+                taskDao.insertTask(entity)
+            }.getOrThrow()
+            
+            android.util.Log.d("TodoRepository", "Task inserted successfully")
+        } catch (e: Exception) {
+            android.util.Log.e("TodoRepository", "Failed to insert task", e)
+            throw e
+        }
     }
     
     override suspend fun updateTask(task: TodoTask) {
