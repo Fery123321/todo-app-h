@@ -4,6 +4,7 @@ import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
 import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.domain.repository.TodoRepository
+import com.example.todoapp.notification.TaskReminderScheduler
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -29,6 +30,7 @@ import java.time.LocalDateTime
 class TodoViewModelTest {
 
     private lateinit var repository: TodoRepository
+    private lateinit var reminderScheduler: TaskReminderScheduler
     private lateinit var viewModel: TodoViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -55,8 +57,9 @@ class TodoViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = mockk()
+        reminderScheduler = mockk(relaxed = true)
         every { repository.getAllTasks() } returns flowOf(sampleTasks)
-        viewModel = TodoViewModel(repository)
+        viewModel = TodoViewModel(repository, reminderScheduler)
     }
 
     @After
@@ -68,7 +71,7 @@ class TodoViewModelTest {
     fun `initial state should have correct default values`() = runTest {
         // Given - fresh ViewModel
         every { repository.getAllTasks() } returns flowOf(emptyList())
-        val freshViewModel = TodoViewModel(repository)
+        val freshViewModel = TodoViewModel(repository, reminderScheduler)
         
         // When - checking initial state before tasks load
         val initialState = freshViewModel.uiState.value

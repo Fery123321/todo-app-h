@@ -36,8 +36,8 @@ import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
 import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.ui.theme.TodoAppTheme
+import com.example.todoapp.util.DateUtils
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun TaskItem(
@@ -201,20 +201,17 @@ private fun DueDateIndicator(
     alpha: Float,
     modifier: Modifier = Modifier
 ) {
-    val now = LocalDateTime.now()
-    val isOverdue = dueDate.isBefore(now) && !isCompleted
-    val isDueToday = dueDate.toLocalDate() == now.toLocalDate() && !isCompleted
+    val dueDateStatus = DateUtils.getDueDateStatus(dueDate, isCompleted)
     
-    val indicatorColor = when {
-        isOverdue -> Color(0xFFE53E3E) // Red
-        isDueToday -> Color(0xFFFF8C00) // Orange
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    val indicatorColor = when (dueDateStatus) {
+        DateUtils.DueDateStatus.OVERDUE -> Color(0xFFE53E3E) // Red
+        DateUtils.DueDateStatus.DUE_TODAY -> Color(0xFFFF8C00) // Orange
+        DateUtils.DueDateStatus.DUE_SOON -> Color(0xFFFFA500) // Yellow
+        DateUtils.DueDateStatus.NORMAL -> MaterialTheme.colorScheme.onSurfaceVariant
     }.copy(alpha = alpha)
     
-    val formatter = DateTimeFormatter.ofPattern("MMM dd")
-    
     Text(
-        text = dueDate.format(formatter),
+        text = DateUtils.formatShortDate(dueDate),
         style = MaterialTheme.typography.labelSmall,
         color = indicatorColor,
         modifier = modifier

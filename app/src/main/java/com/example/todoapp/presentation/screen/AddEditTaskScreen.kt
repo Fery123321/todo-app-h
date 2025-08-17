@@ -56,7 +56,7 @@ import com.example.todoapp.ui.theme.TodoAppTheme
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.example.todoapp.util.DateUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,7 +130,7 @@ fun AddEditTaskScreen(
     }
     
     fun formatDueDate(dateTime: LocalDateTime?): String {
-        return dateTime?.format(DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' h:mm a")) ?: "No due date"
+        return dateTime?.let { DateUtils.formatDateTime(it) } ?: "No due date"
     }
     
     Scaffold(

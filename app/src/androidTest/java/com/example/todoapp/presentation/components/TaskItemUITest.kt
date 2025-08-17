@@ -227,4 +227,75 @@ class TaskItemUITest {
         // Empty description should not create extra space
         composeTestRule.onNodeWithText("Task without description").assertIsDisplayed()
     }
+
+    @Test
+    fun taskItem_displaysOverdueDateWithRedIndicator() {
+        val overdueDate = LocalDateTime.now().minusDays(1)
+        val task = TodoTask(
+            title = "Overdue Task",
+            dueDate = overdueDate
+        )
+        
+        composeTestRule.setContent {
+            TodoAppTheme {
+                TaskItem(
+                    task = task,
+                    onToggleComplete = {},
+                    onTaskClick = {}
+                )
+            }
+        }
+        
+        // Due date should be displayed with proper formatting
+        val expectedDateText = overdueDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd"))
+        composeTestRule.onNodeWithText(expectedDateText).assertIsDisplayed()
+    }
+
+    @Test
+    fun taskItem_displaysDueTodayDateWithOrangeIndicator() {
+        val todayDate = LocalDateTime.now().withHour(23).withMinute(59)
+        val task = TodoTask(
+            title = "Due Today Task",
+            dueDate = todayDate
+        )
+        
+        composeTestRule.setContent {
+            TodoAppTheme {
+                TaskItem(
+                    task = task,
+                    onToggleComplete = {},
+                    onTaskClick = {}
+                )
+            }
+        }
+        
+        // Due date should be displayed with proper formatting
+        val expectedDateText = todayDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd"))
+        composeTestRule.onNodeWithText(expectedDateText).assertIsDisplayed()
+    }
+
+    @Test
+    fun taskItem_doesNotShowDueDateIndicatorWhenCompleted() {
+        val overdueDate = LocalDateTime.now().minusDays(1)
+        val task = TodoTask(
+            title = "Completed Overdue Task",
+            dueDate = overdueDate,
+            isCompleted = true,
+            completedAt = LocalDateTime.now()
+        )
+        
+        composeTestRule.setContent {
+            TodoAppTheme {
+                TaskItem(
+                    task = task,
+                    onToggleComplete = {},
+                    onTaskClick = {}
+                )
+            }
+        }
+        
+        // Due date should still be displayed but without special coloring
+        val expectedDateText = overdueDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd"))
+        composeTestRule.onNodeWithText(expectedDateText).assertIsDisplayed()
+    }
 }

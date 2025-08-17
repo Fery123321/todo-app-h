@@ -92,14 +92,14 @@
     - Write UI tests for animations
     - _Requirements: 5.2, 5.4_
 
-- [ ] 7. Add due date functionality
-  - [ ] 7.1 Implement due date display and indicators
+- [x] 7. Add due date functionality
+  - [x] 7.1 Implement due date display and indicators
     - Add due date display in TaskItem
     - Create visual indicators for overdue and due today tasks
     - Implement date formatting utilities
     - _Requirements: 4.2, 4.3, 4.4_
   
-  - [ ] 7.2 Create notification system
+  - [x] 7.2 Create notification system
     - Set up notification permissions and channels
     - Implement reminder scheduling with WorkManager
     - Create notification content and actions

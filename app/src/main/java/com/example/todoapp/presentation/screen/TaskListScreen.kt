@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -86,7 +86,7 @@ fun TaskListScreen(
                 actions = {
                     IconButton(onClick = { showFilterSheet = true }) {
                         Icon(
-                            imageVector = Icons.Default.FilterList,
+                            imageVector = Icons.Default.Menu,
                             contentDescription = "Filter tasks"
                         )
                     }
@@ -191,21 +191,20 @@ fun TaskListScreen(
     }
     
     // Task input dialog for quick task creation
-    if (showTaskInputDialog) {
-        TaskInputDialog(
-            onDismiss = { showTaskInputDialog = false },
-            onTaskCreate = { title, description, priority, category, dueDate ->
-                viewModel.createTask(
-                    title = title,
-                    description = description,
-                    priority = priority,
-                    category = category,
-                    dueDate = dueDate
-                )
-                showTaskInputDialog = false
-            }
-        )
-    }
+    TaskInputDialog(
+        isVisible = showTaskInputDialog,
+        onDismiss = { showTaskInputDialog = false },
+        onSaveTask = { task ->
+            viewModel.createTask(
+                title = task.title,
+                description = task.description,
+                priority = task.priority,
+                category = task.category,
+                dueDate = task.dueDate
+            )
+            showTaskInputDialog = false
+        }
+    )
 }
 
 @Composable
@@ -242,7 +241,7 @@ private fun EmptyTasksContent(hasFilters: Boolean = false) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp, horizontal = 32.dp)
+                modifier = Modifier.padding(start = 32.dp, top = 8.dp, end = 32.dp, bottom = 0.dp)
             )
         }
     }

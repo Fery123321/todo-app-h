@@ -6,6 +6,7 @@ import com.example.todoapp.domain.repository.TodoRepository
 import com.example.todoapp.domain.model.TodoTask
 import com.example.todoapp.domain.model.Category
 import com.example.todoapp.domain.model.Priority
+import com.example.todoapp.notification.TaskReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TodoViewModel @Inject constructor(
-    private val repository: TodoRepository
+    private val repository: TodoRepository,
+    private val reminderScheduler: TaskReminderScheduler
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(TodoUiState())
@@ -109,6 +111,12 @@ class TodoViewModel @Inject constructor(
                     dueDate = dueDate
                 )
                 repository.insertTask(newTask)
+                
+                // Schedule reminder if task has due date
+                if (newTask.dueDate != null) {
+                    reminderScheduler.scheduleTaskReminder(newTask)
+                }
+                
                 clearError()
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -129,6 +137,10 @@ class TodoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.updateTask(task)
+                
+                // Reschedule reminder for updated task
+                reminderScheduler.rescheduleTaskReminder(task)
+                
                 clearError()
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -142,6 +154,10 @@ class TodoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.deleteTask(taskId)
+                
+                // Cancel any scheduled reminder for this task
+                reminderScheduler.cancelTaskReminder(taskId)
+                
                 clearError()
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -155,6 +171,19 @@ class TodoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.toggleTaskCompletion(taskId)
+                
+                // Find the task to check if it's now completed
+                val task = allTasks.find { it.id == taskId }
+                if (task != null) {
+                    if (task.isCompleted) {
+                        // Task was marked incomplete, reschedule reminder if it has due date
+                        reminderScheduler.scheduleTaskReminder(task)
+                    } else {
+                        // Task was marked complete, cancel reminder
+                        reminderScheduler.cancelTaskReminder(taskId)
+                    }
+                }
+                
                 clearError()
             } catch (exception: Exception) {
                 _uiState.value = _uiState.value.copy(
